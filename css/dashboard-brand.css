@@ -449,7 +449,7 @@ body {
 
 @media (min-width: 901px) {
   .sidebar-toggle {
-    display: none;
+    display: grid;
   }
 
   .app-shell.sidebar-collapsed {
@@ -476,6 +476,23 @@ body {
   .app-shell.sidebar-collapsed .sidebar-bottom span:not(.online-dot),
   .app-shell.sidebar-collapsed .sidebar-bottom small {
     display: initial;
+  }
+
+  .dashboard-main {
+    width: 100%;
+    max-width: none;
+  }
+
+  .dashboard-grid,
+  .metric-grid,
+  .status-strip,
+  .dashboard-footer {
+    width: 100%;
+  }
+
+  .dashboard-grid,
+  .lower-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .app-shell.sidebar-collapsed .dashboard-nav a {
