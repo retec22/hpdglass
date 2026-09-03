@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createMessage, createQuote, listMessages, listQuotes } from "../db.js";
+import { createMessage, createQuote, listAllMessages, listAllQuotes, listMessages, listQuotes } from "../db.js";
 import { requireAuth } from "../middleware/auth.js";
 import { z } from "zod";
 
@@ -13,5 +13,7 @@ export function createPortalRouter() {
   router.post("/quotes", async (request, response, next) => { try { const parsed = quoteSchema.safeParse(request.body); if (!parsed.success) return response.status(422).json({ error: "invalid_quote" }); response.status(201).json({ quote: await createQuote(request.user.id, parsed.data) }); } catch (error) { next(error); } });
   router.get("/messages", async (request, response, next) => { try { response.json({ messages: await listMessages(request.user.id) }); } catch (error) { next(error); } });
   router.post("/messages", async (request, response, next) => { try { const parsed = messageSchema.safeParse(request.body); if (!parsed.success) return response.status(422).json({ error: "invalid_message" }); response.status(201).json({ message: await createMessage(request.user.id, parsed.data) }); } catch (error) { next(error); } });
+  router.get("/admin/messages", async (request, response, next) => { try { if (request.user.role !== "admin") return response.status(403).json({ error: "admin_access_required" }); response.json({ messages: await listAllMessages() }); } catch (error) { next(error); } });
+  router.get("/admin/quotes", async (request, response, next) => { try { if (request.user.role !== "admin") return response.status(403).json({ error: "admin_access_required" }); response.json({ quotes: await listAllQuotes() }); } catch (error) { next(error); } });
   return router;
 }

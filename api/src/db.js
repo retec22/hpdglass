@@ -188,3 +188,13 @@ export async function createMessage(senderId, message) {
   const result = await getPool().query("INSERT INTO messages (sender_id,recipient_id,quote_id,body) VALUES ($1,$2,$3,$4) RETURNING id,sender_id,recipient_id,quote_id,body,created_at", [senderId, message.recipient_id || null, message.quote_id || null, message.body]);
   return result.rows[0];
 }
+
+export async function listAllMessages() {
+  const result = await getPool().query("SELECT id,sender_id,recipient_id,quote_id,body,created_at FROM messages ORDER BY created_at ASC");
+  return result.rows;
+}
+
+export async function listAllQuotes() {
+  const result = await getPool().query("SELECT id,user_id,title,details,status,created_at,updated_at FROM quotes ORDER BY updated_at DESC");
+  return result.rows;
+}
