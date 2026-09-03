@@ -446,3 +446,41 @@ body {
     padding-top: 8px;
   }
 }
+
+@media (min-width: 901px) {
+  .sidebar-toggle {
+    display: none;
+  }
+
+  .app-shell.sidebar-collapsed {
+    grid-template-columns: 250px 1fr;
+  }
+
+  .app-shell.sidebar-collapsed .sidebar {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .app-shell.sidebar-collapsed .dashboard-brand {
+    align-items: initial;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .app-shell.sidebar-collapsed .dashboard-brand img {
+    width: 154px;
+  }
+
+  .app-shell.sidebar-collapsed .dashboard-brand span,
+  .app-shell.sidebar-collapsed .dashboard-nav a > span:last-child,
+  .app-shell.sidebar-collapsed .sidebar-bottom span:not(.online-dot),
+  .app-shell.sidebar-collapsed .sidebar-bottom small {
+    display: initial;
+  }
+
+  .app-shell.sidebar-collapsed .dashboard-nav a {
+    justify-content: initial;
+    padding-left: 10px;
+    padding-right: 12px;
+  }
+}

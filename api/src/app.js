@@ -10,12 +10,28 @@ import { createHealthRouter } from "./routes/health.js";
 import { createLeadRouter } from "./routes/leads.js";
 import { createProjectRouter } from "./routes/projects.js";
 import { requireAuth } from "./middleware/auth.js";
-import { buildDashboardSummary, demoProjects } from "./demo-data.js";
+import { buildDashboardSummary } from "./demo-data.js";
 import { listProjects } from "./db.js";
 
 function withOptionalAuth(request, response, next) {
   if (!process.env.JWT_SECRET || !request.headers.authorization) return next();
   return requireAuth(request, response, next);
+}
+
+function protectDashboard(request, response, next) {
+  const expectedUser = process.env.ADMIN_USER;
+  const expectedPassword = process.env.ADMIN_PASSWORD;
+  if (!expectedUser || !expectedPassword) return next();
+
+  const header = request.headers.authorization || "";
+  if (header.startsWith("Basic ")) {
+    const decoded = Buffer.from(header.slice(6), "base64").toString("utf8");
+    const separator = decoded.indexOf(":");
+    if (separator >= 0 && decoded.slice(0, separator) === expectedUser && decoded.slice(separator + 1) === expectedPassword) return next();
+  }
+
+  response.set("WWW-Authenticate", 'Basic realm="HPD Command Center", charset="UTF-8"');
+  response.status(401).send("Acceso restringido");
 }
 
 export function createApp() {
@@ -65,13 +81,14 @@ export function createApp() {
       });
     }
 
-    const projects = process.env.DATABASE_URL ? await listProjects() : demoProjects;
-    response.json({ ok: true, summary: buildDashboardSummary(projects), source: process.env.DATABASE_URL ? "database" : "demo" });
+    const projects = await listProjects();
+    response.json({ ok: true, summary: buildDashboardSummary(projects), source: process.env.DATABASE_URL ? "database" : "local" });
     } catch (error) {
       next(error);
     }
   });
   if (process.env.SERVE_STATIC === "true") {
+    app.use("/dashboard", protectDashboard);
     app.use(express.static(path.resolve(process.cwd()), { index: "index.html" }));
   }
   app.use(errorHandler);
