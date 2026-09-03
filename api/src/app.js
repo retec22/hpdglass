@@ -14,7 +14,7 @@ import { buildDashboardSummary, demoProjects } from "./demo-data.js";
 import { listProjects } from "./db.js";
 
 function withOptionalAuth(request, response, next) {
-  if (!process.env.JWT_SECRET) return next();
+  if (!process.env.JWT_SECRET || !request.headers.authorization) return next();
   return requireAuth(request, response, next);
 }
 
@@ -35,7 +35,7 @@ export function createApp() {
   app.use("/api/health", createHealthRouter());
   app.get("/api/dashboard/summary", async (request, response, next) => {
     try {
-    if (process.env.JWT_SECRET) {
+    if (process.env.JWT_SECRET && request.headers.authorization) {
       return requireAuth(request, response, () => {
         listProjects().then(projects => response.json({ ok: true, summary: buildDashboardSummary(projects), source: "secure" })).catch(next);
       });
