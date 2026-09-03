@@ -102,7 +102,10 @@ document.addEventListener("DOMContentLoaded",()=>{
  };
  if(menu&&sidebar) menu.addEventListener("click",()=>{const open=sidebar.classList.toggle("open");backdrop?.classList.toggle("is-visible",open);});
  backdrop?.addEventListener("click",()=>{sidebar?.classList.remove("open");backdrop.classList.remove("is-visible");});
- sidebarToggle?.addEventListener("click",()=>{const collapsed=shell?.classList.toggle("sidebar-collapsed");sidebarToggle.setAttribute("aria-expanded",String(!collapsed));sidebarToggle.setAttribute("aria-label",collapsed?"Expandir menú lateral":"Contraer menú lateral");});
+ const setSidebarCollapsed=collapsed=>{shell?.classList.toggle("sidebar-collapsed",collapsed);sidebarToggle?.setAttribute("aria-expanded",String(!collapsed));sidebarToggle?.setAttribute("aria-label",collapsed?"Expandir menú lateral":"Contraer menú lateral");};
+ sidebarToggle?.addEventListener("click",()=>{if(sidebarToggle.dataset.dragged){delete sidebarToggle.dataset.dragged;return;}setSidebarCollapsed(!shell?.classList.contains("sidebar-collapsed"));});
+ sidebarToggle?.addEventListener("pointerdown",event=>{sidebarToggle.dataset.dragStart=String(event.clientX);sidebarToggle.setPointerCapture?.(event.pointerId);});
+ sidebarToggle?.addEventListener("pointerup",event=>{const start=Number(sidebarToggle.dataset.dragStart);delete sidebarToggle.dataset.dragStart;if(!Number.isFinite(start)||Math.abs(event.clientX-start)<18)return;sidebarToggle.dataset.dragged="true";setSidebarCollapsed(event.clientX<start);});
  navLinks.forEach(link=>link.addEventListener('click',event=>{event.preventDefault();showView(link.dataset.dashboardView);}));
  document.querySelector('.new-project-panel-button')?.addEventListener('click',openProjectDialog);
  const initialView=location.hash.slice(1);

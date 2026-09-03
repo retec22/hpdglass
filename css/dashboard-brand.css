@@ -71,6 +71,7 @@ body {
   font-size: 22px;
   line-height: 1;
   cursor: pointer;
+  cursor: ew-resize;
 }
 
 .dashboard-nav {
@@ -135,8 +136,10 @@ body {
 }
 
 .sidebar-collapsed .dashboard-brand img {
-  width: 30px;
-  height: 30px;
+  width: 36px;
+  height: auto;
+  object-fit: contain;
+  object-position: left center;
 }
 
 .dashboard-header {
