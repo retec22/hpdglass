@@ -1,0 +1,19 @@
+{
+  "source": "website",
+  "name": "Nombre",
+  "company": "Empresa",
+  "email": "correo@empresa.com",
+  "phone": "+51...",
+  "client_type": "Constructora",
+  "project": "Proyecto ejemplo",
+  "location": "Lima",
+  "stage": "Licitación",
+  "area": "5000",
+  "date": "2026-10-30",
+  "need": "Muro cortina",
+  "channel": "WhatsApp",
+  "description": "Requerimiento",
+  "files": [],
+  "page": "https://www.hpdglass.com/contacto/",
+  "createdAt": "2026-09-02T00:00:00Z"
+}

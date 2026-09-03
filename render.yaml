@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: hpdglass
+    runtime: node
+    plan: free
+    buildCommand: npm install --prefix api
+    startCommand: node api/server.js
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: SERVE_STATIC
+        value: "true"
+      - key: DATABASE_SSL
+        value: "true"
+      - key: CORS_ORIGINS
+        value: https://hpdglass.onrender.com
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false

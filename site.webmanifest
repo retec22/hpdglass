@@ -1,0 +1,16 @@
+{
+  "name": "HPD Glassgroup",
+  "short_name": "HPD",
+  "lang": "es-PE",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#061421",
+  "background_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/assets/images/brand/hpd-logo.png",
+      "sizes": "any",
+      "type": "image/png"
+    }
+  ]
+}

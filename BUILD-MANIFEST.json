@@ -1,0 +1,29 @@
+{
+  "version": "3.0",
+  "pages": 62,
+  "clean_url_families": [
+    "soluciones",
+    "productos",
+    "ingenieria",
+    "proyectos",
+    "centro-tecnico",
+    "nosotros",
+    "contacto",
+    "blog"
+  ],
+  "features": [
+    "SEO",
+    "schema.org",
+    "sitemap",
+    "robots",
+    "responsive",
+    "lead-form",
+    "technical-center",
+    "product-urls",
+    "project-urls",
+    "segment-landing-pages",
+    "blog",
+    "CRM-ready"
+  ],
+  "logo": "assets/images/brand/hpd-logo.png"
+}

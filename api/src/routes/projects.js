@@ -1,0 +1,16 @@
+import { Router } from "express";
+import { createProject, listProjects } from "../db.js";
+import { projectSchema } from "../validation.js";
+
+export function createProjectRouter() {
+  const router = Router();
+  router.get("/", async (_request, response) => {
+    response.json({ projects: await listProjects() });
+  });
+  router.post("/", async (request, response) => {
+    const parsed = projectSchema.safeParse(request.body);
+    if (!parsed.success) return response.status(422).json({ error: "invalid_project_payload", details: parsed.error.flatten().fieldErrors, requestId: request.requestId });
+    response.status(201).json({ project: await createProject(parsed.data), requestId: request.requestId });
+  });
+  return router;
+}

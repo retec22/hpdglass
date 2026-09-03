@@ -1,0 +1,280 @@
+:root {
+  --hpd-navy: #061b26;
+  --hpd-navy-strong: #04151d;
+  --hpd-cyan: #08b9d8;
+  --hpd-cyan-soft: #dff9fd;
+  --hpd-cyan-deep: #0d8197;
+  --hpd-lime: #c9e776;
+  --hpd-paper: #f4f7f8;
+  --hpd-line: rgba(10, 24, 32, 0.11);
+  --hpd-muted: #5b6f78;
+  --hpd-ink: #0d1d27;
+  --hpd-glass: rgba(255, 255, 255, 0.08);
+}
+
+body {
+  background: linear-gradient(180deg, #f5f8f8 0%, #edf3f4 100%);
+}
+
+.app-shell {
+  background: linear-gradient(180deg, rgba(8, 185, 216, 0.04), transparent 120px);
+}
+
+.sidebar {
+  background: linear-gradient(180deg, var(--hpd-navy-strong) 0%, var(--hpd-navy) 100%);
+  border-right: 1px solid rgba(121, 228, 240, 0.14);
+  box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.04);
+}
+
+.sidebar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top right, rgba(8, 185, 216, 0.2), transparent 34%);
+  pointer-events: none;
+}
+
+.dashboard-brand {
+  position: relative;
+  z-index: 1;
+  padding: 0 12px 28px;
+}
+
+.dashboard-brand span {
+  color: var(--hpd-cyan-soft);
+  letter-spacing: 0.22em;
+}
+
+.dashboard-nav {
+  position: relative;
+  z-index: 1;
+  padding: 4px 8px 0;
+}
+
+.dashboard-nav a {
+  position: relative;
+  padding: 13px 12px 13px 10px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  color: rgba(225, 240, 245, 0.72);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.dashboard-nav a:hover,
+.dashboard-nav a.is-active {
+  background: linear-gradient(135deg, rgba(8, 185, 216, 0.18), rgba(255, 255, 255, 0.06));
+  border-color: rgba(121, 228, 240, 0.22);
+  color: #fff;
+}
+
+.dashboard-nav a.is-active .nav-icon {
+  background: linear-gradient(135deg, var(--hpd-cyan) 0%, #71e0ea 100%);
+  border-color: transparent;
+  color: #03202a;
+  box-shadow: 0 8px 18px rgba(8, 185, 216, 0.32);
+}
+
+.sidebar-bottom {
+  position: relative;
+  z-index: 1;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  margin: 18px 8px 0;
+  padding: 12px 10px;
+}
+
+.dashboard-main {
+  background: transparent;
+}
+
+.dashboard-header {
+  margin-bottom: 22px;
+  padding-bottom: 10px;
+}
+
+.dashboard-header h1 {
+  color: var(--hpd-ink);
+  text-shadow: none;
+}
+
+.section-kicker {
+  color: var(--hpd-cyan-deep);
+}
+
+.metric-card,
+.panel {
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid var(--hpd-line);
+  backdrop-filter: blur(10px);
+}
+
+.metric-card {
+  border-radius: 18px;
+  box-shadow: 0 10px 18px rgba(6, 27, 38, 0.04);
+}
+
+.metric-card.metric-accent {
+  background: linear-gradient(135deg, rgba(8, 185, 216, 0.12), rgba(255, 255, 255, 0.97));
+}
+
+.metric-card strong {
+  color: var(--hpd-ink);
+  font-size: clamp(1.6rem, 2vw, 2.2rem);
+}
+
+.metric-card small {
+  color: var(--hpd-muted);
+}
+
+.status-strip {
+  background: linear-gradient(135deg, rgba(8, 185, 216, 0.1), rgba(201, 231, 118, 0.12));
+  border: 1px solid rgba(8, 185, 216, 0.12);
+  border-radius: 18px;
+  box-shadow: 0 10px 18px rgba(6, 27, 38, 0.04);
+}
+
+.status-strip a {
+  color: var(--hpd-cyan-deep);
+  font-weight: 700;
+}
+
+.panel {
+  border-radius: 22px;
+  box-shadow: 0 18px 34px rgba(8, 24, 34, 0.06);
+}
+
+.panel-heading h2 {
+  color: var(--hpd-ink);
+}
+
+.select-button,
+.report-button,
+.round-arrow,
+.new-project-panel-button {
+  border: 0;
+  background: linear-gradient(135deg, var(--hpd-cyan) 0%, #77dfe9 100%);
+  color: #03202a;
+  box-shadow: 0 10px 20px rgba(8, 185, 216, 0.18);
+}
+
+.select-button:hover,
+.report-button:hover,
+.round-arrow:hover,
+.new-project-panel-button:hover {
+  filter: brightness(1.02);
+  transform: translateY(-1px);
+}
+
+.pipeline-bars > div {
+  background: linear-gradient(180deg, rgba(8, 185, 216, 0.12), rgba(8, 185, 216, 0.02));
+  border-radius: 10px;
+}
+
+.pipeline-bars > div::before {
+  background: linear-gradient(180deg, var(--bar-color, var(--hpd-cyan)) 0%, rgba(8, 185, 216, 0.7) 100%);
+}
+
+.activity-item {
+  border: 1px solid rgba(10, 24, 32, 0.08);
+  background: rgba(244, 247, 248, 0.8);
+  border-radius: 16px;
+}
+
+.channel-badge.whatsapp,
+.connector-logo.whatsapp { background: linear-gradient(135deg, #d7f8ff, #b8effc); color: #0b738a; }
+.channel-badge.meta,
+.connector-logo.meta { background: linear-gradient(135deg, #dff8d8, #d6f0c2); color: #2b6a3c; }
+.channel-badge.tiktok,
+.connector-logo.tiktok { background: linear-gradient(135deg, #fef1d2, #f8e1ae); color: #7d5a00; }
+
+.catalog-card {
+  border: 1px solid rgba(10, 24, 32, 0.08);
+  border-radius: 16px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.catalog-card-image {
+  border-bottom: 1px solid rgba(10, 24, 32, 0.08);
+}
+
+.catalog-card-body h3 {
+  color: var(--hpd-ink);
+}
+
+.catalog-card-body small {
+  color: var(--hpd-cyan-deep);
+}
+
+.project-dialog {
+  border-radius: 22px;
+  box-shadow: 0 30px 70px rgba(4, 21, 29, 0.22);
+}
+
+.project-dialog .report-button {
+  justify-self: stretch;
+  border-radius: 12px;
+}
+
+.mobile-menu {
+  background: linear-gradient(135deg, rgba(8, 185, 216, 0.18), rgba(255, 255, 255, 0.7));
+  border: 1px solid rgba(8, 185, 216, 0.28);
+  color: var(--hpd-ink);
+}
+
+@media (max-width: 900px) {
+  .app-shell {
+    display: block;
+  }
+
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: min(300px, 82vw);
+    height: 100dvh;
+    z-index: 70;
+    transform: translateX(-110%);
+    transition: transform 0.28s ease;
+    padding-top: 26px;
+    box-shadow: 18px 0 56px rgba(4, 21, 29, 0.24);
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .dashboard-main {
+    padding: 22px 16px 24px;
+  }
+
+  .dashboard-header {
+    display: block;
+  }
+
+  .header-actions {
+    margin-top: 22px;
+  }
+}
+
+@media (max-width: 640px) {
+  .dashboard-header h1 {
+    font-size: clamp(2.1rem, 12vw, 3rem);
+  }
+
+  .metric-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .catalog-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dialog-fields {
+    grid-template-columns: 1fr;
+  }
+}
