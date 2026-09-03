@@ -1,24 +1,21 @@
 document.addEventListener("DOMContentLoaded",()=>{
  const sidebar=document.querySelector("[data-sidebar]");
  const menu=document.querySelector("[data-dashboard-menu]");
+ const backdrop=document.querySelector(".sidebar-backdrop");
  const navLinks=[...document.querySelectorAll('[data-dashboard-view]')];
  const panels=[...document.querySelectorAll('[data-dashboard-panel]')];
  const projectKey="hpd.dashboard.projects";
- const demoProjects=[
-  {id:"demo-1",name:"Centro Empresarial More",client:"More Inmobiliaria",location:"San Isidro, Lima",stage:"instalacion",progress:76,value_cents:1850000000,scope:"Fachada ventilada, vidrio estructural, puertas y control solar."},
-  {id:"demo-2",name:"Clínica Internacional",client:"Grupo Clínicas",location:"Surco, Lima",stage:"fabricacion",progress:62,value_cents:1350000000,scope:"Muro cortina, fachadas de vidrio, accesos y acabados técnicos."},
-  {id:"demo-3",name:"Pardo 200",client:"Pardo 200",location:"Miraflores, Lima",stage:"diseno",progress:48,value_cents:960000000,scope:"Diseño de fachada, metales y vidrio laminado para torre corporativa."},
-  {id:"demo-4",name:"Time Plaza",client:"Time Realty",location:"San Miguel, Lima",stage:"preventa",progress:29,value_cents:720000000,scope:"Propuesta arquitectónica, vidrio low-e y envolvente de fachada."}
- ];
  let projects;
  try{projects=JSON.parse(localStorage.getItem(projectKey)||"null");}catch(error){projects=null;}
- if(!Array.isArray(projects)||!projects.length){projects=demoProjects;localStorage.setItem(projectKey,JSON.stringify(projects));}
+ if(!Array.isArray(projects)){projects=[];}
+ projects=projects.filter(project=>!String(project.id||"").startsWith("demo-"));
  const escapeHtml=value=>String(value||"").replace(/[&<>'"]/g,character=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[character]));
  const cloudinaryImage=url=>{if(!url)return "";return url.includes("res.cloudinary.com")?url.replace("/upload/","/upload/f_auto,q_auto,w_1200/"):url;};
  const showView=view=>{
   panels.forEach(panel=>panel.hidden=panel.dataset.dashboardPanel!==view);
   navLinks.forEach(link=>link.classList.toggle('is-active',link.dataset.dashboardView===view));
   if(sidebar) sidebar.classList.remove('open');
+  if(backdrop) backdrop.classList.remove('is-visible');
   history.replaceState(null,'',`#${view}`);
   window.scrollTo({top:0,behavior:'smooth'});
  };
@@ -80,7 +77,8 @@ document.addEventListener("DOMContentLoaded",()=>{
   });
   dialog.showModal();
  };
- if(menu&&sidebar) menu.addEventListener("click",()=>sidebar.classList.toggle("open"));
+ if(menu&&sidebar) menu.addEventListener("click",()=>{const open=sidebar.classList.toggle("open");backdrop?.classList.toggle("is-visible",open);});
+ backdrop?.addEventListener("click",()=>{sidebar?.classList.remove("open");backdrop.classList.remove("is-visible");});
  navLinks.forEach(link=>link.addEventListener('click',event=>{event.preventDefault();showView(link.dataset.dashboardView);}));
  document.querySelector('.new-project-panel-button')?.addEventListener('click',openProjectDialog);
  const initialView=location.hash.slice(1);
