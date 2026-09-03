@@ -24,7 +24,7 @@ export const projectSchema = z.object({
   progress: z.number().int().min(0).max(100).default(0),
   value_cents: z.number().int().min(0).default(0),
   scope: z.string().trim().max(10000).optional(),
-  image_url: z.string().url().max(2000).optional()
+  image_url: z.preprocess(value => value === "" ? undefined : value, z.string().url().max(2000).optional())
 }).strict();
 
 export const projectFormSchema = projectSchema.omit({ image_url: true }).extend({
