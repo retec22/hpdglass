@@ -49,7 +49,7 @@ export function createApp() {
         defaultSrc: ["'self'"],
         baseUri: ["'self'"],
         objectSrc: ["'none'"],
-        scriptSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'"],
         styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
         fontSrc: ["'self'", "https://fonts.gstatic.com", "data:"],
         imgSrc: [
@@ -58,6 +58,7 @@ export function createApp() {
           "blob:",
           "https://www.hpdglass.com",
           "https://hpdglass.com",
+          "https://images.unsplash.com",
           "https://res.cloudinary.com",
           "https://images.pexels.com",
           "https://www.cndwmn.com"
