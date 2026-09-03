@@ -1,9 +1,36 @@
 import pg from "pg";
 import { demoProjects } from "./demo-data.js";
+import { v2 as cloudinary } from "cloudinary";
 
 const { Pool } = pg;
 let pool;
 let memoryProjects = demoProjects.map((project) => ({ ...project }));
+
+function getCloudinary() {
+  if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+    throw Object.assign(new Error("cloudinary_not_configured"), { statusCode: 503 });
+  }
+  cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+    secure: true
+  });
+  return cloudinary;
+}
+
+export async function uploadProjectImage(file) {
+  if (!file?.buffer) throw Object.assign(new Error("image_required"), { statusCode: 422 });
+  const client = getCloudinary();
+  return new Promise((resolve, reject) => {
+    const upload = client.uploader.upload_stream({
+      folder: "hpdglass/projects",
+      resource_type: "image",
+      transformation: [{ width: 1600, height: 1000, crop: "fill", gravity: "auto", quality: "auto", fetch_format: "auto" }]
+    }, (error, result) => error ? reject(error) : resolve(result.secure_url));
+    upload.end(file.buffer);
+  });
+}
 
 function getPool() {
   if (!process.env.DATABASE_URL) throw Object.assign(new Error("database_not_configured"), { statusCode: 503 });

@@ -11,6 +11,7 @@ import { createLeadRouter } from "./routes/leads.js";
 import { createProjectRouter } from "./routes/projects.js";
 import { requireAuth } from "./middleware/auth.js";
 import { buildDashboardSummary, demoProjects } from "./demo-data.js";
+import { listProjects } from "./db.js";
 
 function withOptionalAuth(request, response, next) {
   if (!process.env.JWT_SECRET) return next();
@@ -32,14 +33,19 @@ export function createApp() {
   app.use("/api/leads", createLeadRouter());
   app.use("/api/projects", withOptionalAuth, createProjectRouter());
   app.use("/api/health", createHealthRouter());
-  app.get("/api/dashboard/summary", (request, response) => {
+  app.get("/api/dashboard/summary", async (request, response, next) => {
+    try {
     if (process.env.JWT_SECRET) {
       return requireAuth(request, response, () => {
-        response.json({ ok: true, summary: buildDashboardSummary(), source: "secure" });
+        listProjects().then(projects => response.json({ ok: true, summary: buildDashboardSummary(projects), source: "secure" })).catch(next);
       });
     }
 
-    response.json({ ok: true, summary: buildDashboardSummary(demoProjects), source: "demo" });
+    const projects = process.env.DATABASE_URL ? await listProjects() : demoProjects;
+    response.json({ ok: true, summary: buildDashboardSummary(projects), source: process.env.DATABASE_URL ? "database" : "demo" });
+    } catch (error) {
+      next(error);
+    }
   });
   if (process.env.SERVE_STATIC === "true") {
     app.use(express.static(path.resolve(process.cwd()), { index: "index.html" }));

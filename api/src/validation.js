@@ -26,3 +26,7 @@ export const projectSchema = z.object({
   scope: z.string().trim().max(10000).optional(),
   image_url: z.string().url().max(2000).optional()
 }).strict();
+
+export const projectFormSchema = projectSchema.omit({ image_url: true }).extend({
+  image_url: z.string().url().max(2000).optional()
+});

@@ -44,9 +44,11 @@ document.addEventListener("DOMContentLoaded",()=>{
   bars.forEach((bar,index)=>{const amount=projects.filter(project=>project.stage===stages[index]).length;bar.style.setProperty('--value',projects.length?`${Math.max(12,amount/projects.length*100)}%`:"0%");bar.querySelector('b').textContent=projects.length?`${amount} proyectos`:"Sin datos";});
     renderProjectCatalog();
  };
- const addProject=async(project)=>{
+ const addProject=async(project,imageFile)=>{
     try{
-     const response=await fetch('/api/projects',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(project)});
+   const request= imageFile ? new FormData() : JSON.stringify(project);
+   if(imageFile){Object.entries(project).forEach(([key,value])=>request.append(key,value));request.append('image',imageFile);}
+   const response=await fetch(imageFile?'/api/projects/upload':'/api/projects',{method:'POST',headers:imageFile?{}:{'Content-Type':'application/json'},body:request});
      if(response.ok){const payload=await response.json();project=payload.project||project;}
     }catch(error){}
   projects.unshift(project);
@@ -64,14 +66,15 @@ document.addEventListener("DOMContentLoaded",()=>{
  const openProjectDialog=()=>{
   const dialog=document.createElement('dialog');
   dialog.className='project-dialog';
-    dialog.innerHTML='<form method="dialog"><button type="button" class="dialog-close" aria-label="Cerrar">×</button><span class="section-kicker">NUEVO REGISTRO</span><h2>Agregar proyecto</h2><div class="dialog-fields"><label>Nombre del proyecto<input name="name" required maxlength="180" placeholder="Ej. Torre Central"></label><label>Cliente<input name="client" maxlength="180" placeholder="Empresa o desarrolladora"></label><label>Ubicación<input name="location" maxlength="180" placeholder="Lima, Perú"></label><label>Etapa<select name="stage"><option value="preventa">Preventa</option><option value="diseno">Diseño</option><option value="fabricacion">Fabricación</option><option value="instalacion">Instalación</option><option value="cerrado">Cerrado</option></select></label><label>Avance (%)<input name="progress" type="number" min="0" max="100" value="0"></label><label>Presupuesto (S/)<input name="value" type="number" min="0" step="1000" placeholder="0"></label></div><label>Descripción y alcance<textarea name="scope" required maxlength="10000" placeholder="Vidrio, aluminio, muro cortina, entregables..."></textarea><small class="dialog-hint">Puedes pegar aquí la URL optimizada de Cloudinary.</small><label>Imagen del proyecto<input name="image_url" type="url" maxlength="2000" placeholder="https://res.cloudinary.com/..."></label><button class="report-button" value="save">Guardar proyecto <span>↗</span></button></form>';
+    dialog.innerHTML='<form method="dialog"><button type="button" class="dialog-close" aria-label="Cerrar">×</button><span class="section-kicker">NUEVO REGISTRO</span><h2>Agregar proyecto</h2><div class="dialog-fields"><label>Nombre del proyecto<input name="name" required maxlength="180" placeholder="Ej. Torre Central"></label><label>Cliente<input name="client" maxlength="180" placeholder="Empresa o desarrolladora"></label><label>Ubicación<input name="location" maxlength="180" placeholder="Lima, Perú"></label><label>Etapa<select name="stage"><option value="preventa">Preventa</option><option value="diseno">Diseño</option><option value="fabricacion">Fabricación</option><option value="instalacion">Instalación</option><option value="cerrado">Cerrado</option></select></label><label>Avance (%)<input name="progress" type="number" min="0" max="100" value="0"></label><label>Presupuesto (S/)<input name="value" type="number" min="0" step="1000" placeholder="0"></label></div><label>Descripción y alcance<textarea name="scope" required maxlength="10000" placeholder="Vidrio, aluminio, muro cortina, entregables..."></textarea><label>Imagen del proyecto<input name="image" type="file" accept="image/jpeg,image/png,image/webp,image/avif"><small class="dialog-hint">La imagen se optimizará y alojará en Cloudinary.</small></label><label>O URL de imagen<input name="image_url" type="url" maxlength="2000" placeholder="https://res.cloudinary.com/..."></label><button class="report-button" value="save">Guardar proyecto <span>↗</span></button></form>';
   document.body.appendChild(dialog);
     dialog.querySelector('.dialog-close').addEventListener('click',()=>dialog.close());
   dialog.addEventListener('close',()=>dialog.remove());
   dialog.addEventListener('submit',event=>{
    event.preventDefault();
     const data=new FormData(event.target);
-    addProject({name:String(data.get('name')),client:String(data.get('client')),location:String(data.get('location')),scope:String(data.get('scope')),stage:String(data.get('stage')),progress:Number(data.get('progress')||0),value_cents:Number(data.get('value')||0)*100,image_url:String(data.get('image_url')||''),createdAt:new Date().toISOString()});
+    const imageFile=data.get('image');
+    addProject({name:String(data.get('name')),client:String(data.get('client')),location:String(data.get('location')),scope:String(data.get('scope')),stage:String(data.get('stage')),progress:Number(data.get('progress')||0),value_cents:Number(data.get('value')||0)*100,image_url:String(data.get('image_url')||''),createdAt:new Date().toISOString()},imageFile?.size?imageFile:null);
    dialog.close();
    showView('bandeja');
   });
