@@ -30,3 +30,7 @@ export const projectSchema = z.object({
 export const projectFormSchema = projectSchema.omit({ image_url: true }).extend({
   image_url: z.string().url().max(2000).optional()
 });
+
+export const registerSchema = z.object({ email: z.string().trim().email().max(320), password: z.string().min(10).max(200), name: z.string().trim().min(2).max(160), company: z.string().trim().max(200).optional(), tax_id: z.string().trim().max(32).optional(), phone: z.string().trim().max(64).optional() }).strict();
+export const loginSchema = z.object({ email: z.string().trim().email().max(320), password: z.string().min(1).max(200) }).strict();
+export const profileSchema = registerSchema.omit({ email: true, password: true }).strict();

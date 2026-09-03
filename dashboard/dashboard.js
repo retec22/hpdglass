@@ -115,6 +115,7 @@ document.addEventListener("DOMContentLoaded",()=>{
  sidebarToggle?.addEventListener("pointerup",event=>{const start=Number(sidebarToggle.dataset.dragStart);delete sidebarToggle.dataset.dragStart;if(!Number.isFinite(start)||Math.abs(event.clientX-start)<18)return;sidebarToggle.dataset.dragged="true";setSidebarCollapsed(event.clientX<start);});
  navLinks.forEach(link=>link.addEventListener('click',event=>{event.preventDefault();showView(link.dataset.dashboardView);}));
  document.querySelector('.new-project-panel-button')?.addEventListener('click',openProjectDialog);
+ document.querySelector('[data-account-link]')?.addEventListener('click',()=>{location.href='../cuenta/portal.html';});
  const initialView=location.hash.slice(1);
  showView(navLinks.some(link=>link.dataset.dashboardView===initialView)?initialView:'resumen');
  updateProjectCount();

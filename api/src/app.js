@@ -12,6 +12,8 @@ import { createProjectRouter } from "./routes/projects.js";
 import { requireAuth } from "./middleware/auth.js";
 import { buildDashboardSummary } from "./demo-data.js";
 import { listProjects } from "./db.js";
+import { createAuthRouter } from "./routes/auth.js";
+import { createPortalRouter } from "./routes/portal.js";
 
 function withOptionalAuth(request, response, next) {
   if (!process.env.JWT_SECRET || !request.headers.authorization) return next();
@@ -71,6 +73,8 @@ export function createApp() {
   app.use("/api/webhooks", express.raw({ type: "application/json", limit: "256kb" }), createWebhookRouter());
   app.use(express.json({ limit: "256kb" }));
   app.use("/api/leads", createLeadRouter());
+  app.use("/api/auth", createAuthRouter());
+  app.use("/api/portal", createPortalRouter());
   app.use("/api/projects", withOptionalAuth, createProjectRouter());
   app.use("/api/health", createHealthRouter());
   app.get("/api/dashboard/summary", async (request, response, next) => {

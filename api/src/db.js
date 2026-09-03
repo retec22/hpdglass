@@ -1,5 +1,6 @@
 import pg from "pg";
 import { v2 as cloudinary } from "cloudinary";
+import crypto from "node:crypto";
 
 const { Pool } = pg;
 let pool;
@@ -135,4 +136,55 @@ export async function deleteProject(id) {
 
 export async function closeDatabase() {
   if (pool) await pool.end();
+}
+
+export async function findUserByEmail(email) {
+  if (!process.env.DATABASE_URL) return null;
+  const result = await getPool().query("SELECT id, email, password_hash, role, name, company, tax_id, phone FROM users WHERE LOWER(email)=LOWER($1)", [email]);
+  return result.rows[0] || null;
+}
+
+export async function createUser(user) {
+  const passwordHash = await hashPassword(user.password);
+  const result = await getPool().query("INSERT INTO users (email, password_hash, role, name, company, tax_id, phone) VALUES ($1,$2,'cliente',$3,$4,$5,$6) RETURNING id,email,role,name,company,tax_id,phone", [user.email, passwordHash, user.name, user.company || null, user.tax_id || null, user.phone || null]);
+  return result.rows[0];
+}
+
+export async function getUserById(id) {
+  const result = await getPool().query("SELECT id,email,role,name,company,tax_id,phone FROM users WHERE id=$1", [id]);
+  return result.rows[0] || null;
+}
+
+export async function updateUser(id, user) {
+  const result = await getPool().query("UPDATE users SET name=$1, company=$2, tax_id=$3, phone=$4, updated_at=NOW() WHERE id=$5 RETURNING id,email,role,name,company,tax_id,phone", [user.name, user.company || null, user.tax_id || null, user.phone || null, id]);
+  return result.rows[0] || null;
+}
+
+export async function hashPassword(password) {
+  return new Promise((resolve, reject) => crypto.scrypt(password, process.env.PASSWORD_PEPPER || "", 64, (error, derived) => error ? reject(error) : resolve(derived.toString("hex")));
+}
+
+export async function verifyPassword(password, hash) {
+  const candidate = await hashPassword(password);
+  return crypto.timingSafeEqual(Buffer.from(candidate, "hex"), Buffer.from(hash, "hex"));
+}
+
+export async function listQuotes(userId) {
+  const result = await getPool().query("SELECT id,title,details,status,created_at,updated_at FROM quotes WHERE user_id=$1 ORDER BY updated_at DESC", [userId]);
+  return result.rows;
+}
+
+export async function createQuote(userId, quote) {
+  const result = await getPool().query("INSERT INTO quotes (user_id,title,details) VALUES ($1,$2,$3) RETURNING id,title,details,status,created_at,updated_at", [userId, quote.title, quote.details]);
+  return result.rows[0];
+}
+
+export async function listMessages(userId) {
+  const result = await getPool().query("SELECT id,sender_id,recipient_id,quote_id,body,created_at FROM messages WHERE sender_id=$1 OR recipient_id=$1 ORDER BY created_at ASC", [userId]);
+  return result.rows;
+}
+
+export async function createMessage(senderId, message) {
+  const result = await getPool().query("INSERT INTO messages (sender_id,recipient_id,quote_id,body) VALUES ($1,$2,$3,$4) RETURNING id,sender_id,recipient_id,quote_id,body,created_at", [senderId, message.recipient_id || null, message.quote_id || null, message.body]);
+  return result.rows[0];
 }
