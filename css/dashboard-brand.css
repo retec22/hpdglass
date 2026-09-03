@@ -123,11 +123,18 @@ body {
 }
 
 .sidebar-collapsed .sidebar-toggle {
-  right: 27px;
+  top: 58px;
+  right: 25px;
 }
 
 .sidebar-collapsed .sidebar-toggle span {
   transform: rotate(180deg);
+}
+
+.header-actions {
+  align-self: stretch;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(10, 24, 32, 0.14);
 }
 
 .dashboard-nav {
