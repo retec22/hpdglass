@@ -16,6 +16,8 @@ document.addEventListener("DOMContentLoaded",()=>{
  const showView=view=>{
   panels.forEach(panel=>panel.hidden=panel.dataset.dashboardPanel!==view);
   navLinks.forEach(link=>link.classList.toggle('is-active',link.dataset.dashboardView===view));
+  const welcome=document.querySelector('.welcome-block');
+  if(welcome) welcome.hidden=view!=="resumen";
   if(sidebar) sidebar.classList.remove('open');
   if(backdrop) backdrop.classList.remove('is-visible');
   history.replaceState(null,'',`#${view}`);
