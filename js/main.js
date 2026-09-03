@@ -30,9 +30,32 @@ document.addEventListener("DOMContentLoaded", () => {
           <a href="/cuenta/">Iniciar</a>
           <a href="/cuenta/?mode=register">Registrar</a>
         </div>
+        <div class="nav-user-dropdown" hidden>
+          <a href="/cuenta/">Iniciar sesión</a>
+          <a href="/cuenta/?mode=register">Registrarse</a>
+        </div>
       `;
       slot.innerHTML = "";
       slot.appendChild(shell);
+      const loginTrigger = shell.querySelector(".nav-user-trigger");
+      const loginDropdown = shell.querySelector(".nav-user-dropdown");
+      loginTrigger?.setAttribute("aria-expanded", "false");
+      loginTrigger?.addEventListener("click", event => {
+        event.preventDefault();
+        event.stopPropagation();
+        const isHidden = loginDropdown?.hasAttribute("hidden");
+        document.querySelectorAll(".nav-user-dropdown").forEach(item => item.setAttribute("hidden", "hidden"));
+        if(loginDropdown && isHidden){
+          loginDropdown.removeAttribute("hidden");
+          loginTrigger.setAttribute("aria-expanded", "true");
+        }
+      });
+      document.addEventListener("click", event => {
+        if(!event.target.closest(".nav-user-shell")){
+          loginDropdown?.setAttribute("hidden", "hidden");
+          loginTrigger?.setAttribute("aria-expanded", "false");
+        }
+      });
       return;
     }
 
@@ -177,7 +200,16 @@ document.addEventListener("DOMContentLoaded", () => {
       const productMenu=document.createElement("div");
       productMenu.className="nav-products";
       productLink.replaceWith(productMenu);
-      productMenu.innerHTML='<a href="/productos/" class="nav-products-link">Productos</a><div class="products-mega"><div><span class="mega-kicker">CATÁLOGO HPD</span><strong>Elige por sistema y desempeño.</strong><p>Soluciones para especificar fachadas, cerramientos y arquitectura interior.</p><a class="mega-all" href="/productos/">Ver catálogo completo <span>↗</span></a></div><div class="mega-columns"><div><span>Vidrios</span><a href="/productos/vidrio-templado/">Templado y laminado</a><a href="/productos/vidrio-low-e/">Low-E y control solar</a><a href="/productos/vidrio-insulado/">Insulado</a></div><div><span>Sistemas</span><a href="/productos/muro-cortina-mcs035/">Muro cortina</a><a href="/productos/ventanas-corredizas/">Ventanas y mamparas</a><a href="/productos/perfiles-aluminio/">Aluminio y PAC</a></div></div></div>';
+      productMenu.innerHTML='<a href="/productos/" class="nav-products-link"><span class="nav-products-label">Productos</span></a><div class="products-mega"><div><span class="mega-kicker">CATÁLOGO HPD</span><strong>Elige por sistema y desempeño.</strong><p>Soluciones para especificar fachadas, cerramientos y arquitectura interior.</p><a class="mega-all" href="/productos/">Ver catálogo completo <span>↗</span></a></div><div class="mega-columns"><div><span>Vidrios</span><a href="/productos/vidrio-templado/">Templado y laminado</a><a href="/productos/vidrio-low-e/">Low-E y control solar</a><a href="/productos/vidrio-insulado/">Insulado</a></div><div><span>Sistemas</span><a href="/productos/muro-cortina-mcs035/">Muro cortina</a><a href="/productos/ventanas-corredizas/">Ventanas y mamparas</a><a href="/productos/perfiles-aluminio/">Aluminio y PAC</a></div></div></div>';
+          const productsToggle=productMenu.querySelector('.nav-products-link');
+          productsToggle?.addEventListener('click',event=>{
+            if(window.innerWidth<=900){
+              event.preventDefault();
+              event.stopImmediatePropagation();
+              productMenu.classList.toggle('is-open');
+              productsToggle.setAttribute('aria-expanded',String(productMenu.classList.contains('is-open')));
+            }
+          });
     }
   }
   let menuOverlay;

@@ -1,4 +1,6 @@
 document.addEventListener("DOMContentLoaded",()=>{
+ const currentUser=(()=>{try{return JSON.parse(localStorage.getItem("hpd.auth.user")||"null");}catch(error){return null;}})();
+ if(!currentUser||currentUser.role!=="admin"){location.replace("../cuenta/");return;}
  const sidebar=document.querySelector("[data-sidebar]");
  const shell=document.querySelector(".app-shell");
  const sidebarToggle=document.querySelector("[data-sidebar-toggle]");

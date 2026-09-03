@@ -1,7 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Roboto:wght@400;500;700;900&display=swap');
 /* HPD 3.3 — premium visual system */
 :root{--ink:#07151e;--navy:#06151f;--cyan:#08b9d8;--cyan-2:#79e4f0;--lime:#c8e56b;--muted:#64747c;--line:#d9e4e8;--paper:#f4f7f8;--white:#fff;--container:1320px;--ease:cubic-bezier(.2,.75,.2,1)}
 html{scroll-behavior:smooth}
-body{font-family:"Montserrat",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;background:#fff;color:var(--ink);overflow-x:hidden}h1,h2,h3,h4,h5,h6,button,input,textarea,select{font-family:"Montserrat",sans-serif}
+body{font-family:"Roboto",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;background:#fff;color:var(--ink);overflow-x:hidden}h1,h2,h3,h4,h5,h6,button,input,textarea,select{font-family:"Roboto",sans-serif}
 .icon{width:18px;height:18px;display:inline-block;flex:0 0 auto;vertical-align:middle;fill:none}
 .icon-sm{width:15px;height:15px}.icon-lg{width:22px;height:22px}
 .logo{width:clamp(126px,13vw,174px)!important;flex:0 1 clamp(126px,13vw,174px)!important;height:auto!important;aspect-ratio:434 / 150;mix-blend-mode:multiply;overflow:hidden}.logo img{display:block;width:100%!important;height:auto!important;max-height:none!important;aspect-ratio:434 / 150;object-fit:contain!important;object-position:left center!important}
@@ -64,6 +65,7 @@ body:has(.site-header-hero) .topbar{display:none}
 }
 @media(min-width:901px){
 	.nav-account-slot .nav-mobile-account-links,.nav-account-slot .nav-mobile-logout{display:none!important}
+	.nav-account-slot .nav-user-dropdown a{display:block;color:#eff9fb!important;padding:10px 12px!important;white-space:nowrap;font-family:"Montserrat",sans-serif!important}
 }
 .site-header-hero .menu-btn{color:#fff}.site-header-hero.is-scrolled .menu-btn{color:var(--ink)}
 .image-large figcaption{top:24px;bottom:auto;left:24px;right:auto;z-index:3;max-width:270px;padding:10px 14px;border-left:2px solid var(--cyan-2);background:rgba(3,15,22,.74);backdrop-filter:blur(10px)}
@@ -130,11 +132,40 @@ body:has(.page-hero) .site-header.is-scrolled .nav-cta{background:var(--cyan);co
 	.nav-links{padding-top:24px!important;overflow-x:hidden!important}
 	.nav-links > .nav-account-slot{order:-1!important}
 	.nav-links .nav-account-slot{display:flex!important;position:static!important;width:100%;height:auto;margin:0 0 24px;min-width:0;justify-content:center;align-items:flex-start;background:transparent!important;box-shadow:none!important}
-	.nav-links .nav-user-trigger--login{width:88px!important;height:88px!important}
-	.nav-links .nav-user-trigger--login .nav-user-avatar svg{width:29px!important;height:29px!important}
+	.nav-links .nav-user-trigger--login{width:70px!important;height:70px!important}
+	.nav-links .nav-user-trigger--login .nav-user-avatar svg{width:28px!important;height:28px!important}
 	.nav-links .nav-user-shell{display:flex!important;flex-direction:column!important;flex-wrap:nowrap!important;align-items:center!important;justify-content:flex-start!important;gap:0!important;width:100%!important}
 	.nav-links .nav-mobile-account-links{display:flex!important;flex-basis:100%;justify-content:center;gap:28px;margin-top:12px;white-space:nowrap}
-	.nav-links .nav-mobile-account-links a{display:block!important;color:#dcecef!important;font:700 13px/1.2 "Montserrat",sans-serif;text-decoration:none}
+	.nav-links .nav-mobile-account-links a{display:block!important;color:#07151e!important;font:700 13px/1.2 "Roboto",sans-serif;text-decoration:none}
+	.nav-links .nav-mobile-account-links a:first-child{color:#07839c!important}
+	.nav-links .nav-mobile-account-links a:last-child{color:#5b7d12!important}
+	.nav-links .nav-mobile-account-links a:after{content:"";display:block;height:2px;margin-top:7px;background:currentColor;opacity:.45}
+	.nav-links{background:#f4f8fa!important;color:var(--ink)!important;border-right:1px solid #b9d9e0!important}
+	.nav-links>a,.nav-products-link{color:#07151e!important;background:#fff!important;border-color:#c9e0e5!important;box-shadow:0 7px 18px rgba(4,24,35,.07)}
+	.nav-links>a:hover,.nav-products-link:hover{color:#057f99!important;background:#effafd!important;border-color:#8ed8e3!important}
+	.nav-links>a:before,.nav-products-link:before{background:var(--lime)!important;box-shadow:0 0 0 4px rgba(200,229,107,.18)!important}
+	.nav-products-link:before{width:9px!important;height:9px!important;background:var(--cyan)!important;box-shadow:0 0 0 4px rgba(8,185,216,.14)!important}
+	.nav-links>a,.nav-products-link{min-height:40px!important;padding:8px 14px!important}
+	.nav-products-link{display:flex!important;color:#07151e!important;font-size:14px!important;font-weight:800!important;visibility:visible!important}
+	.nav-products-label{display:block!important;visibility:visible!important;opacity:1!important;color:#07151e!important;font:800 14px/1.2 "Roboto",sans-serif!important;white-space:nowrap!important}
+	.nav-products-link:after{content:none!important;display:none!important}
+		.products-mega{display:none!important;position:static!important;visibility:visible!important;opacity:1!important}
+		.nav-products.is-open .products-mega{display:block!important}
+		.products-mega .mega-columns{position:relative;padding-top:12px!important}
+	.nav-links>a:nth-of-type(odd),.nav-products-link{border-left:3px solid var(--cyan)!important}
+	.nav-links>a:nth-of-type(even){border-left:3px solid var(--lime)!important}
+	.nav-products-link{border-left-color:var(--lime)!important}
+	.nav-products-link:before{background:var(--lime)!important;box-shadow:0 0 0 4px rgba(200,229,107,.18)!important}
+	.nav-links>a[href="/ingenieria/"],.nav-links>a[href="/centro-tecnico/"],.nav-links>a[href="/nosotros/"]{border-left-color:var(--cyan)!important}
+	.nav-links>a[href="/proyectos/"],.nav-links>a[href="/contacto/"]{border-left-color:var(--lime)!important}
+	.products-mega .mega-columns span{color:#07839c!important}
+	.products-mega .mega-columns a{color:#244653!important;background:transparent!important;border:0!important;border-bottom:1px solid #d9e7eb!important;box-shadow:none!important;padding:7px 0!important;line-height:1.35!important}
+	.products-mega .mega-columns a:hover{color:#057f99!important;background:transparent!important}
+	.products-mega .mega-columns{position:relative;padding-top:12px!important}
+	.products-mega .mega-columns:before{content:"";position:absolute;left:0;right:0;top:0;height:1px;background:#b9d9e0}
+	.products-mega .mega-columns>div+div{border-left:1px solid #c9e0e5;padding-left:12px}
+	.drawer-close{background:#fff!important;border-color:#c4d8de!important;color:var(--ink)!important;box-shadow:0 6px 16px rgba(4,24,35,.08)}
+	.nav-mobile-account-links a,.nav-mobile-logout{color:var(--ink)!important;font-family:"Roboto",sans-serif!important}
 	body.menu-open .nav-account-slot{display:flex!important;position:static!important;width:100%;height:auto;margin:0 0 24px;min-width:0;background:transparent!important;box-shadow:none!important}
 	body.menu-open .site-header-hero .menu-btn{position:absolute!important;top:8px;right:22px;left:auto;z-index:250}
 	body.menu-open .menu-overlay{background:transparent!important;backdrop-filter:none!important}
