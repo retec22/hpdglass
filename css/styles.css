@@ -42,7 +42,30 @@ button,input,select,textarea{font:inherit}
 .nav-cta{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:48px;padding:0 20px;border-radius:14px;background:var(--ink);color:#fff;font-size:13px;font-weight:800;box-shadow:0 10px 24px rgba(6,24,35,.16);transition:.22s ease;white-space:nowrap}
 .nav-cta:before{content:"↗";font-size:15px;color:var(--lime)}
 .nav-cta:hover{transform:translateY(-2px);background:#0c2634}
+.nav-account-slot{display:flex;align-items:center;justify-content:center;min-width:72px;padding-left:0;margin-left:0;flex:0 0 auto;order:4}
+.nav-mobile-account-links,.nav-mobile-logout{display:none}
+.nav-user-shell{position:relative;display:flex;align-items:center}
+.nav-user-trigger{display:grid;place-items:center;width:46px;height:46px;border-radius:50%;border:1px solid rgba(8,185,216,.28);background:linear-gradient(135deg,#0c2430 0%,#0a7d8f 100%);box-shadow:0 12px 28px rgba(8,185,216,.18);cursor:pointer;padding:0;transition:transform .2s ease;text-decoration:none}
+.nav-user-trigger--login{width:56px;height:56px;background:#fff;border:0;box-shadow:0 10px 24px rgba(7,21,30,.14);color:#0d2330}
+.nav-user-trigger:hover{transform:translateY(-1px)}
+.nav-user-avatar{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.18);color:#fff;font-size:13px;font-weight:800;letter-spacing:.04em}
+.nav-user-trigger--login .nav-user-avatar{background:transparent;color:#0d2330;width:100%;height:100%;font-size:18px;line-height:1}
+.nav-user-trigger--login .nav-user-avatar svg{width:21px;height:21px;color:#0d2330;display:block}
+.nav-user-dropdown{position:absolute;top:calc(100% + 14px);right:0;display:grid;min-width:220px;padding:12px;border-radius:18px;background:rgba(6,24,35,.97);border:1px solid rgba(121,228,240,.2);box-shadow:0 18px 44px rgba(4,19,28,.28);z-index:120}
+.nav-user-dropdown[hidden]{display:none}
+.nav-user-info{padding:8px 10px 12px;border-bottom:1px solid rgba(160,182,191,.2);margin-bottom:8px}
+.nav-user-info span{display:block;color:#fff;font-size:13px;font-weight:800}
+.nav-user-info small{color:#aec3cb;font-size:11px}
+.nav-user-dropdown a,.nav-user-dropdown button{appearance:none;border:0;background:transparent;color:#eff9fb;padding:10px 12px;border-radius:10px;text-align:left;font:700 13px/1.2 "Manrope",sans-serif;cursor:pointer;transition:background .2s ease}
+.nav-user-dropdown a:hover,.nav-user-dropdown button:hover{background:rgba(121,228,240,.1)}
+.nav-user-link{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:0 14px;border-radius:999px;border:1px solid rgba(8,185,216,.28);background:rgba(8,185,216,.12);color:#0c2330;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+.nav-user-dropdown .nav-user-info + a, .nav-user-dropdown .nav-user-logout {margin-top:2px}
 .menu-btn{display:none;border:1px solid var(--line);background:#fff;border-radius:12px;width:46px;height:46px;font-size:0;position:relative}
+@media (max-width: 900px){
+  .nav-account-slot{min-width:52px}
+  .nav-user-shell{position:static}
+  .nav-user-dropdown{right:18px;left:18px;min-width:0;width:auto}
+}
 .menu-btn:before,.menu-btn:after{content:"";position:absolute;left:13px;right:13px;height:2px;background:var(--ink);transition:.2s}.menu-btn:before{top:17px}.menu-btn:after{top:25px}
 .hero{position:relative;isolation:isolate;overflow:hidden;background:var(--navy);color:#fff;padding:76px 0 58px;min-height:720px;display:flex;align-items:center}
 .hero:before{content:"";position:absolute;inset:0;z-index:-2;background:radial-gradient(circle at 78% 30%,rgba(9,185,220,.28),transparent 28%),radial-gradient(circle at 92% 92%,rgba(200,229,107,.15),transparent 24%),linear-gradient(125deg,#04121b 0%,#062330 55%,#0b5a6d 100%)}

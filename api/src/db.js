@@ -3,6 +3,7 @@ import { v2 as cloudinary } from "cloudinary";
 import crypto from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 const { Pool } = pg;
 let pool;
@@ -44,7 +45,7 @@ export async function runMigrations() {
   if (!process.env.DATABASE_URL) return;
   const database = getPool();
   await database.query("CREATE TABLE IF NOT EXISTS schema_migrations (filename VARCHAR(255) PRIMARY KEY, applied_at TIMESTAMPTZ NOT NULL DEFAULT NOW())");
-  const migrationDirectory = path.resolve(process.cwd(), "api/migrations");
+  const migrationDirectory = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../migrations");
   const filenames = (await fs.readdir(migrationDirectory)).filter(filename => /^\d+_.*\.sql$/.test(filename)).sort();
   for (const filename of filenames) {
     const applied = await database.query("SELECT 1 FROM schema_migrations WHERE filename=$1", [filename]);
@@ -61,6 +62,30 @@ export async function runMigrations() {
       throw error;
     }
   }
+
+  await ensureDefaultAdminUser();
+}
+
+export async function ensureDefaultAdminUser() {
+  const email = process.env.ADMIN_USER?.trim();
+  const password = process.env.ADMIN_PASSWORD?.trim();
+  if (!process.env.DATABASE_URL || !email || !password) return null;
+
+  const passwordHash = await hashPassword(password);
+  const result = await getPool().query(
+    `INSERT INTO users (email, password_hash, role, name, company)
+     VALUES ($1, $2, 'admin', 'Administrador HPD', 'HPD Glassgroup')
+     ON CONFLICT (email) DO UPDATE SET
+       password_hash = EXCLUDED.password_hash,
+       role = 'admin',
+       name = COALESCE(users.name, EXCLUDED.name),
+       company = COALESCE(users.company, EXCLUDED.company),
+       updated_at = NOW()
+     RETURNING id, email, role, name, company`,
+    [email.toLowerCase(), passwordHash]
+  );
+
+  return result.rows[0] || null;
 }
 
 export async function saveWebhookEvent(provider, providerEventId, payload) {
@@ -172,6 +197,17 @@ export async function findUserByEmail(email) {
 export async function createUser(user) {
   const passwordHash = await hashPassword(user.password);
   const result = await getPool().query("INSERT INTO users (email, password_hash, role, name, company, tax_id, phone) VALUES ($1,$2,'cliente',$3,$4,$5,$6) RETURNING id,email,role,name,company,tax_id,phone", [user.email, passwordHash, user.name, user.company || null, user.tax_id || null, user.phone || null]);
+  return result.rows[0];
+}
+
+export async function listUsers() {
+  const result = await getPool().query("SELECT id,email,role,name,company,tax_id,phone,created_at,updated_at FROM users ORDER BY created_at DESC");
+  return result.rows;
+}
+
+export async function createAdminUser(user) {
+  const passwordHash = await hashPassword(user.password);
+  const result = await getPool().query("INSERT INTO users (email, password_hash, role, name, company, tax_id, phone) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id,email,role,name,company,tax_id,phone,created_at", [user.email.toLowerCase(), passwordHash, user.role || "cliente", user.name, user.company || null, user.tax_id || null, user.phone || null]);
   return result.rows[0];
 }
 

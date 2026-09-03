@@ -1,5 +1,101 @@
 document.addEventListener("DOMContentLoaded", () => {
   const config=window.HPD_CONFIG;
+
+  const getStoredUser = () => {
+    try {
+      const user = JSON.parse(localStorage.getItem("hpd.auth.user") || "null");
+      return user && typeof user === "object" ? user : null;
+    } catch (error) {
+      return null;
+    }
+  };
+  const renderAccountMenu = () => {
+    const slot = document.querySelector(".nav-account-slot");
+    if (!slot) return;
+
+    const user = getStoredUser();
+    const shell = document.createElement("div");
+    shell.className = "nav-user-shell";
+
+    if (!user) {
+      shell.innerHTML = `
+        <a class="nav-user-trigger nav-user-trigger--login" href="/cuenta/" aria-label="Iniciar sesión">
+          <span class="nav-user-avatar">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M12 12.2a3.7 3.7 0 1 0 0-7.4 3.7 3.7 0 0 0 0 7.4Zm-6.2 7.1c.9-2.5 3.1-3.9 6.2-3.9s5.3 1.4 6.2 3.9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </a>
+        <div class="nav-mobile-account-links">
+          <a href="/cuenta/">Iniciar</a>
+          <a href="/cuenta/?mode=register">Registrar</a>
+        </div>
+      `;
+      slot.innerHTML = "";
+      slot.appendChild(shell);
+      return;
+    }
+
+    const initials = (user.name || user.email || "U").split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]?.toUpperCase() || "").join("") || "U";
+    const roleTarget = user.role === "admin" ? "/dashboard/" : "/cuenta/portal.html";
+
+    shell.innerHTML = `
+      <button class="nav-user-trigger" type="button" aria-label="Abrir menú de usuario" aria-expanded="false">
+        <span class="nav-user-avatar">${initials}</span>
+      </button>
+      <button class="nav-mobile-logout" type="button">Cerrar sesión</button>
+      <div class="nav-user-dropdown" hidden>
+        <div class="nav-user-info">
+          <span>${user.name || "Usuario"}</span>
+          <small>${user.email || "hpd@cliente.com"}</small>
+        </div>
+        <a href="${roleTarget}">Ir al panel</a>
+        <button type="button" class="nav-user-logout">Cerrar sesión</button>
+      </div>
+    `;
+
+    slot.innerHTML = "";
+    slot.appendChild(shell);
+
+    const trigger = shell.querySelector(".nav-user-trigger");
+    const dropdown = shell.querySelector(".nav-user-dropdown");
+    const logoutButton = shell.querySelector(".nav-user-logout");
+    const mobileLogoutButton = shell.querySelector(".nav-mobile-logout");
+
+    trigger?.addEventListener("click", (event) => {
+      event.stopPropagation();
+      const isHidden = dropdown?.hasAttribute("hidden");
+      document.querySelectorAll(".nav-user-dropdown").forEach(item => item.setAttribute("hidden", "hidden"));
+      if (dropdown) {
+        if (isHidden) {
+          dropdown.removeAttribute("hidden");
+          trigger.setAttribute("aria-expanded", "true");
+        } else {
+          dropdown.setAttribute("hidden", "hidden");
+          trigger.setAttribute("aria-expanded", "false");
+        }
+      }
+    });
+
+    const logout = () => {
+      localStorage.removeItem("hpd.auth.token");
+      localStorage.removeItem("hpd.auth.user");
+      renderAccountMenu();
+      window.location.href = "/cuenta/";
+    };
+    logoutButton?.addEventListener("click", logout);
+    mobileLogoutButton?.addEventListener("click", logout);
+
+    document.addEventListener("click", (event) => {
+      if (!event.target.closest(".nav-user-shell")) {
+        dropdown?.setAttribute("hidden", "hidden");
+        trigger?.setAttribute("aria-expanded", "false");
+      }
+    }, { once: false });
+  };
+
+  renderAccountMenu();
+
   document.querySelectorAll(".logo img").forEach(image=>{
     image.src="https://www.hpdglass.com/wp-content/uploads/2025/06/Logo-tamano-2.svg";
     image.onerror=()=>{ image.onerror=null; image.src=image.src.includes("Logo-tamano-2") ? "/assets/images/brand/hpd-logo-transparent.png" : image.src; };
@@ -59,6 +155,17 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   const menuBtn = document.querySelector("[data-menu]");
   const nav = document.querySelector(".nav-links");
+  const accountSlot = document.querySelector(".nav-account-slot");
+  const accountHome = accountSlot?.parentElement;
+  const accountAnchor = accountSlot?.nextSibling;
+  const placeMobileAccount = open => {
+    if(!accountSlot || !nav || window.innerWidth > 900) return;
+    if(open){
+      nav.prepend(accountSlot);
+    }else if(accountHome){
+      accountHome.insertBefore(accountSlot, accountAnchor);
+    }
+  };
   const siteSearch=document.querySelector(".site-search");
   const siteSearchToggle=siteSearch?.querySelector(".site-search-toggle");
   const siteSearchInput=siteSearch?.querySelector("input");
@@ -77,6 +184,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const closeMenu = () => {
     if(!nav || !menuBtn) return;
     nav.classList.remove("open");
+    placeMobileAccount(false);
     if(window.matchMedia("(max-width: 900px)").matches){
       nav.style.setProperty("transition", "none", "important");
       nav.style.setProperty("transform", "translateX(-105%)", "important");
@@ -111,6 +219,7 @@ document.addEventListener("DOMContentLoaded", () => {
     menuOverlay.addEventListener("click", closeMenu);
     menuBtn.addEventListener("click", () => {
       const open = nav.classList.toggle("open");
+      placeMobileAccount(open);
       nav.style.setProperty("transition", "none", "important");
       nav.style.setProperty("transform", open ? "translateX(0)" : "translateX(-105%)", "important");
       document.body.classList.toggle("menu-open", open);
@@ -122,6 +231,7 @@ document.addEventListener("DOMContentLoaded", () => {
     nav.querySelectorAll("a").forEach(link=>link.addEventListener("click",()=>{
       if(window.innerWidth<=900){
         nav.classList.remove("open");
+        placeMobileAccount(false);
         nav.style.setProperty("transition","none","important");
         nav.style.setProperty("transform","translateX(-105%)","important");
         document.body.classList.remove("menu-open");
@@ -132,6 +242,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.addEventListener("keydown", event=>{ if(event.key==="Escape") closeMenu(); });
     window.addEventListener("resize",()=>{
       if(window.innerWidth>900){
+        placeMobileAccount(false);
         closeMenu();
         nav.style.removeProperty("transition");
         nav.style.removeProperty("transform");

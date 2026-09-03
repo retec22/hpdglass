@@ -19,6 +19,9 @@ document.addEventListener("DOMContentLoaded",()=>{
  if(!Array.isArray(projects)||!projects.length){projects=officialProjects;localStorage.setItem(projectKey,JSON.stringify(projects));}
  projects=projects.filter(project=>!String(project.id||"").startsWith("demo-"));
  const escapeHtml=value=>String(value||"").replace(/[&<>'"]/g,character=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[character]));
+ const authHeaders=()=>{const token=localStorage.getItem('hpd.auth.token');return token?{Authorization:`Bearer ${token}`}:{}};
+ const renderUsers=users=>{const list=document.querySelector('[data-user-list]');if(!list)return;list.innerHTML=users.length?users.map(user=>`<div class="user-row"><div><strong>${escapeHtml(user.name)}</strong><small>${escapeHtml(user.email)}${user.company?` · ${escapeHtml(user.company)}`:''}</small></div><span>${escapeHtml(user.role)}</span></div>`).join(''):'<p>No hay usuarios registrados.</p>';};
+ const loadUsers=async()=>{const response=await fetch('/api/portal/admin/users',{headers:authHeaders(),cache:'no-store'});if(!response.ok)throw new Error('No se pudieron cargar los usuarios.');const payload=await response.json();renderUsers(payload.users||[]);};
  const cloudinaryImage=url=>{if(!url)return "";return url.includes("res.cloudinary.com")?url.replace("/upload/","/upload/f_auto,q_auto,w_1200/"):url;};
  const showView=view=>{
   panels.forEach(panel=>panel.hidden=panel.dataset.dashboardPanel!==view);
@@ -115,11 +118,13 @@ document.addEventListener("DOMContentLoaded",()=>{
  sidebarToggle?.addEventListener("pointerup",event=>{const start=Number(sidebarToggle.dataset.dragStart);delete sidebarToggle.dataset.dragStart;if(!Number.isFinite(start)||Math.abs(event.clientX-start)<18)return;sidebarToggle.dataset.dragged="true";setSidebarCollapsed(event.clientX<start);});
  navLinks.forEach(link=>link.addEventListener('click',event=>{event.preventDefault();showView(link.dataset.dashboardView);}));
  document.querySelector('.new-project-panel-button')?.addEventListener('click',openProjectDialog);
+ document.querySelector('[data-user-form]')?.addEventListener('submit',async event=>{event.preventDefault();const form=event.currentTarget;const message=document.querySelector('[data-user-message]');const data=Object.fromEntries(new FormData(form));try{const response=await fetch('/api/portal/admin/users',{method:'POST',headers:{...authHeaders(),'Content-Type':'application/json'},body:JSON.stringify(data)});const payload=await response.json();if(!response.ok)throw new Error(payload.error||'No se pudo crear el usuario.');form.reset();message.textContent='Usuario agregado correctamente.';await loadUsers();}catch(error){message.textContent=error.message;}});
  document.querySelector('[data-account-link]')?.addEventListener('click',()=>{location.href='../cuenta/portal.html';});
  const initialView=location.hash.slice(1);
  showView(navLinks.some(link=>link.dataset.dashboardView===initialView)?initialView:'resumen');
  updateProjectCount();
  renderProjectCatalog();
+ loadUsers().catch(error=>{const message=document.querySelector('[data-user-message]');if(message)message.textContent=error.message;});
  fetch('/api/dashboard/summary',{cache:'no-store'}).then(response=>response.ok?response.json():null).then(payload=>{
   if(payload?.summary?.projects?.length){projects=payload.summary.projects;localStorage.setItem(projectKey,JSON.stringify(projects));updateProjectCount();}
   return fetch('/api/projects',{cache:'no-store'});
