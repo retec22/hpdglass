@@ -1,5 +1,7 @@
 document.addEventListener("DOMContentLoaded",()=>{
  const sidebar=document.querySelector("[data-sidebar]");
+ const shell=document.querySelector(".app-shell");
+ const sidebarToggle=document.querySelector("[data-sidebar-toggle]");
  const menu=document.querySelector("[data-dashboard-menu]");
  const backdrop=document.querySelector(".sidebar-backdrop");
  const navLinks=[...document.querySelectorAll('[data-dashboard-view]')];
@@ -79,6 +81,7 @@ document.addEventListener("DOMContentLoaded",()=>{
  };
  if(menu&&sidebar) menu.addEventListener("click",()=>{const open=sidebar.classList.toggle("open");backdrop?.classList.toggle("is-visible",open);});
  backdrop?.addEventListener("click",()=>{sidebar?.classList.remove("open");backdrop.classList.remove("is-visible");});
+ sidebarToggle?.addEventListener("click",()=>{const collapsed=shell?.classList.toggle("sidebar-collapsed");sidebarToggle.setAttribute("aria-expanded",String(!collapsed));sidebarToggle.setAttribute("aria-label",collapsed?"Expandir menú lateral":"Contraer menú lateral");});
  navLinks.forEach(link=>link.addEventListener('click',event=>{event.preventDefault();showView(link.dataset.dashboardView);}));
  document.querySelector('.new-project-panel-button')?.addEventListener('click',openProjectDialog);
  const initialView=location.hash.slice(1);
