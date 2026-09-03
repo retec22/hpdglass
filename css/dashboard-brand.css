@@ -391,3 +391,10 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 700px) {
+  .dashboard-nav {
+    gap: 14px;
+    padding-top: 8px;
+  }
+}
