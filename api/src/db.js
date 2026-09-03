@@ -161,7 +161,12 @@ export async function updateUser(id, user) {
 }
 
 export async function hashPassword(password) {
-  return new Promise((resolve, reject) => crypto.scrypt(password, process.env.PASSWORD_PEPPER || "", 64, (error, derived) => error ? reject(error) : resolve(derived.toString("hex")));
+  return new Promise((resolve, reject) => {
+    crypto.scrypt(password, process.env.PASSWORD_PEPPER || "", 64, (error, derived) => {
+      if (error) reject(error);
+      else resolve(derived.toString("hex"));
+    });
+  });
 }
 
 export async function verifyPassword(password, hash) {
