@@ -1,6 +1,8 @@
 import pg from "pg";
 import { v2 as cloudinary } from "cloudinary";
 import crypto from "node:crypto";
+import fs from "node:fs/promises";
+import path from "node:path";
 
 const { Pool } = pg;
 let pool;
@@ -36,6 +38,29 @@ function getPool() {
   if (!process.env.DATABASE_URL) throw Object.assign(new Error("database_not_configured"), { statusCode: 503 });
   pool ||= new Pool({ connectionString: process.env.DATABASE_URL, ssl: process.env.DATABASE_SSL === "true" ? { rejectUnauthorized: true } : undefined, max: 10 });
   return pool;
+}
+
+export async function runMigrations() {
+  if (!process.env.DATABASE_URL) return;
+  const database = getPool();
+  await database.query("CREATE TABLE IF NOT EXISTS schema_migrations (filename VARCHAR(255) PRIMARY KEY, applied_at TIMESTAMPTZ NOT NULL DEFAULT NOW())");
+  const migrationDirectory = path.resolve(process.cwd(), "api/migrations");
+  const filenames = (await fs.readdir(migrationDirectory)).filter(filename => /^\d+_.*\.sql$/.test(filename)).sort();
+  for (const filename of filenames) {
+    const applied = await database.query("SELECT 1 FROM schema_migrations WHERE filename=$1", [filename]);
+    if (applied.rowCount) continue;
+    const sql = await fs.readFile(path.join(migrationDirectory, filename), "utf8");
+    await database.query("BEGIN");
+    try {
+      await database.query(sql);
+      await database.query("INSERT INTO schema_migrations (filename) VALUES ($1)", [filename]);
+      await database.query("COMMIT");
+      console.log(`Applied migration ${filename}`);
+    } catch (error) {
+      await database.query("ROLLBACK");
+      throw error;
+    }
+  }
 }
 
 export async function saveWebhookEvent(provider, providerEventId, payload) {

@@ -3,6 +3,8 @@
 La web publica y el dashboard nunca deben conectarse directamente a SQL Server, ERP ni a las APIs sociales. El flujo de produccion es:
 
 Navegador -> API HPD -> Neon / Cloudinary
+
+Al iniciar `server.js`, las migraciones SQL se ejecutan automáticamente en orden y se registran en `schema_migrations`. En Render solo es necesario configurar `DATABASE_URL`; no se debe ejecutar la misma migración manualmente.
                                       -> base de datos de conversaciones y leads
 
 ## Endpoints internos recomendados
