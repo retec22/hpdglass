@@ -17,7 +17,7 @@ Al iniciar `server.js`, las migraciones SQL se ejecutan automáticamente en orde
 - `POST /api/webhooks/tiktok`: recibe eventos de TikTok Business.
 - `POST /api/connectors/:channel/oauth/callback`: intercambia codigos OAuth en servidor.
 
-El formulario web ya envia su payload a `POST /api/leads`; el endpoint valida el esquema, limita el cuerpo y persiste el lead en PostgreSQL. La sincronizacion con un CRM externo debe implementarse como worker posterior a la persistencia.
+El formulario web ya envia su payload a `POST /api/leads`; la API valida el esquema, limita el cuerpo y persiste la solicitud en PostgreSQL.
 
 ## Requisitos de seguridad
 
@@ -41,9 +41,9 @@ El repositorio ahora incluye un esqueleto ejecutable en `api/`:
 - `src/providers/tiktok.js`: adaptador separado; el header y algoritmo final deben confirmarse contra la documentación habilitada para la cuenta TikTok.
 - `src/routes/webhooks.js`: endpoints separados y respuesta `202` para procesamiento asíncrono.
 - `src/routes/health.js`: health-check que no expone secretos.
-- `migrations/001_crm_events.sql`: tablas de eventos y leads con claves únicas para deduplicación.
+- `migrations/001_crm_events.sql`: tablas históricas de eventos y solicitudes con claves únicas para deduplicación.
 - `.env.example`: configuración sin credenciales reales.
 
 Para activar cada canal hacen falta credenciales de una cuenta empresarial, URLs públicas de webhook, verificación de Meta/TikTok/WhatsApp, base de datos y un worker que procese la cola. El servidor debe desplegarse detrás de HTTPS y un proxy con secretos gestionados por el proveedor de infraestructura. Nunca se deben colocar esos datos en `dashboard.js` ni en cualquier JavaScript servido al navegador.
 
-No se debe considerar el CRM completo todavía: la recepción validada y persistencia de leads/eventos están implementadas, pero faltan autenticación de usuarios, worker de procesamiento, sincronización con el CRM externo, OAuth de cada cuenta empresarial, pruebas de contrato con payloads oficiales y despliegue. La conexión debe activarse por proveedor, con sus propios permisos, scopes, firmas, límites y políticas de reintento.
+La API incluye autenticación de usuarios, perfiles, cotizaciones, mensajería, proyectos y conexión con Neon/Cloudinary.
