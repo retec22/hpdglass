@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
 :root {
   --hpd-navy: #061b26;
   --hpd-navy-strong: #04151d;
@@ -14,6 +15,7 @@
 
 body {
   background: linear-gradient(180deg, #f5f8f8 0%, #edf3f4 100%);
+  font-family: "Montserrat", sans-serif;
 }
 
 .app-shell {
@@ -58,15 +60,15 @@ body {
 .sidebar-toggle {
   position: absolute;
   top: 50%;
-  right: 12px;
+  right: -16px;
   z-index: 2;
   display: grid;
   place-items: center;
-  width: 28px;
-  height: 28px;
-  border: 1px solid rgba(121, 228, 240, 0.28);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.08);
+  width: 34px;
+  height: 48px;
+  border: 1px solid rgba(121, 228, 240, 0.42);
+  border-radius: 0 12px 12px 0;
+  background: rgba(6, 36, 47, 0.94);
   color: #dff9fd;
   font-size: 22px;
   line-height: 1;
@@ -134,7 +136,7 @@ body {
 }
 
 .sidebar-collapsed .sidebar-toggle {
-  right: 8px;
+  right: -17px;
 }
 
 .sidebar-collapsed .sidebar-toggle span {
@@ -214,6 +216,11 @@ body {
 
 .dashboard-main {
   background: transparent;
+}
+
+.dashboard-main,
+.dashboard-main * {
+  font-family: "Montserrat", sans-serif;
 }
 
 .dashboard-header {
