@@ -25,7 +25,31 @@ export function createApp() {
   app.disable("x-powered-by");
   if (process.env.TRUST_PROXY) app.set("trust proxy", Number(process.env.TRUST_PROXY));
   app.use(requestContext);
-  app.use(helmet({ contentSecurityPolicy: true, referrerPolicy: { policy: "strict-origin-when-cross-origin" } }));
+  app.use(helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        baseUri: ["'self'"],
+        objectSrc: ["'none'"],
+        scriptSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+        fontSrc: ["'self'", "https://fonts.gstatic.com", "data:"],
+        imgSrc: [
+          "'self'",
+          "data:",
+          "blob:",
+          "https://www.hpdglass.com",
+          "https://hpdglass.com",
+          "https://res.cloudinary.com",
+          "https://images.pexels.com",
+          "https://www.cndwmn.com"
+        ],
+        connectSrc: ["'self'"],
+        formAction: ["'self'"]
+      }
+    },
+    referrerPolicy: { policy: "strict-origin-when-cross-origin" }
+  }));
   app.use(cors({ origin: origins.length ? origins : false, credentials: true, methods: ["GET", "POST", "PUT", "PATCH", "DELETE"] }));
   app.use(rateLimit({ windowMs: 15 * 60 * 1000, limit: 300, standardHeaders: "draft-7", legacyHeaders: false }));
   app.use("/api/webhooks", express.raw({ type: "application/json", limit: "256kb" }), createWebhookRouter());
