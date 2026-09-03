@@ -7,9 +7,16 @@ document.addEventListener("DOMContentLoaded",()=>{
  const navLinks=[...document.querySelectorAll('[data-dashboard-view]')];
  const panels=[...document.querySelectorAll('[data-dashboard-panel]')];
  const projectKey="hpd.dashboard.projects";
+ const officialProjects=[
+  {id:"official-pardo-200",name:"Pardo 200",client:"Proyecto corporativo",location:"Miraflores - Lima",stage:"instalacion",progress:82,value_cents:180000000,scope:"Fachada integral y muro cortina",image_url:"https://www.hpdglass.com/wp-content/uploads/2025/04/Banner-principal-1_11zon.webp"},
+  {id:"official-time",name:"Time",client:"Proyecto corporativo",location:"Lima",stage:"diseno",progress:48,value_cents:210000000,scope:"Ingeniería y entrega de planos",image_url:"https://www.hpdglass.com/wp-content/uploads/2025/05/intercontinental1.jpg"},
+  {id:"official-more",name:"Centro Empresarial More",client:"Proyecto empresarial",location:"Lima",stage:"fabricacion",progress:64,value_cents:270000000,scope:"Vidrio, aluminio y fachada integral",image_url:"https://www.hpdglass.com/wp-content/uploads/2025/05/pac-1-scaled.jpg"},
+  {id:"official-clinica",name:"Clínica Internacional",client:"Proyecto de salud",location:"Lima",stage:"instalacion",progress:71,value_cents:180000000,scope:"Fachada y cerramientos de alto desempeño",image_url:"https://www.hpdglass.com/wp-content/uploads/2025/04/Banner-principal-1_11zon.webp"},
+  {id:"official-pucp",name:"Centro de Convenciones PUCP",client:"Proyecto institucional",location:"Lima",stage:"cerrado",progress:100,value_cents:160000000,scope:"Fachadas y vidrio arquitectónico",image_url:"https://www.hpdglass.com/wp-content/uploads/2025/05/IMG_0290-min_11zon-scaled.webp"}
+ ];
  let projects;
  try{projects=JSON.parse(localStorage.getItem(projectKey)||"null");}catch(error){projects=null;}
- if(!Array.isArray(projects)){projects=[];}
+ if(!Array.isArray(projects)||!projects.length){projects=officialProjects;localStorage.setItem(projectKey,JSON.stringify(projects));}
  projects=projects.filter(project=>!String(project.id||"").startsWith("demo-"));
  const escapeHtml=value=>String(value||"").replace(/[&<>'"]/g,character=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[character]));
  const cloudinaryImage=url=>{if(!url)return "";return url.includes("res.cloudinary.com")?url.replace("/upload/","/upload/f_auto,q_auto,w_1200/"):url;};
