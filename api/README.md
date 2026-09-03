@@ -2,7 +2,7 @@
 
 La web publica y el dashboard nunca deben conectarse directamente a SQL Server, ERP ni a las APIs sociales. El flujo de produccion es:
 
-Navegador -> API HPD -> cola de eventos -> CRM / ERP / canales sociales
+Navegador -> API HPD -> Neon / Cloudinary
                                       -> base de datos de conversaciones y leads
 
 ## Endpoints internos recomendados

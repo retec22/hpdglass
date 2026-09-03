@@ -1,10 +1,9 @@
 import pg from "pg";
-import { demoProjects } from "./demo-data.js";
 import { v2 as cloudinary } from "cloudinary";
 
 const { Pool } = pg;
 let pool;
-let memoryProjects = demoProjects.map((project) => ({ ...project }));
+let memoryProjects = [];
 
 function getCloudinary() {
   if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
@@ -55,7 +54,7 @@ export async function saveWebhookEvent(provider, providerEventId, payload) {
 
 export async function saveLead(lead) {
   if (!process.env.DATABASE_URL) {
-    return { inserted: true, id: `demo-${Date.now()}` };
+    return { inserted: true, id: `local-${Date.now()}` };
   }
 
   const result = await getPool().query(
@@ -107,6 +106,31 @@ export async function createProject(project) {
     [project.name, project.client || null, project.location || null, project.stage, project.progress, project.value_cents, project.scope || null, project.image_url || null]
   );
   return result.rows[0];
+}
+
+export async function updateProject(id, project) {
+  if (!process.env.DATABASE_URL) {
+    const index = memoryProjects.findIndex((entry) => String(entry.id) === String(id));
+    if (index < 0) return null;
+    memoryProjects[index] = { ...memoryProjects[index], ...project, updated_at: new Date().toISOString() };
+    return memoryProjects[index];
+  }
+  const result = await getPool().query(
+    `UPDATE projects SET name=$1, client=$2, location=$3, stage=$4, progress=$5, value_cents=$6, scope=$7, image_url=$8, updated_at=NOW()
+     WHERE id=$9 RETURNING id, name, client, location, stage, progress, value_cents, scope, image_url, created_at, updated_at`,
+    [project.name, project.client || null, project.location || null, project.stage, project.progress, project.value_cents, project.scope || null, project.image_url || null, id]
+  );
+  return result.rows[0] || null;
+}
+
+export async function deleteProject(id) {
+  if (!process.env.DATABASE_URL) {
+    const before = memoryProjects.length;
+    memoryProjects = memoryProjects.filter((entry) => String(entry.id) !== String(id));
+    return memoryProjects.length !== before;
+  }
+  const result = await getPool().query("DELETE FROM projects WHERE id=$1", [id]);
+  return result.rowCount === 1;
 }
 
 export async function closeDatabase() {

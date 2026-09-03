@@ -28,7 +28,26 @@ document.addEventListener("DOMContentLoaded",()=>{
   if(!panel)return;
   let catalog=panel.querySelector('.project-catalog');
   if(!catalog){catalog=document.createElement('div');catalog.className='project-catalog';panel.append(catalog);}
-  catalog.innerHTML=projects.length?`<div class="catalog-heading"><span class="section-kicker">CARTERA ACTUAL</span><strong>${projects.length} proyectos registrados</strong></div><div class="catalog-grid">${projects.map(project=>`<article class="catalog-card"><div class="catalog-card-image"${project.image_url||project.image?` style="background-image:url('${escapeHtml(cloudinaryImage(project.image_url||project.image))}')"`:''}><span>${escapeHtml(project.stage||'preventa')}</span></div><div class="catalog-card-body"><h3>${escapeHtml(project.name)}</h3><p>${escapeHtml(project.scope||project.description||'Sin descripción')}</p><small>${escapeHtml(project.client||project.location||'Proyecto HPD')} · ${Number(project.progress||0)}% avance</small></div></article>`).join('')}</div>`:'<div class="catalog-empty">Aún no hay proyectos registrados. Usa “Nuevo proyecto” para crear el primero.</div>';
+  catalog.innerHTML=projects.length?`<div class="catalog-heading"><span class="section-kicker">CARTERA ACTUAL</span><strong>${projects.length} proyectos registrados</strong></div><div class="catalog-grid">${projects.map(project=>`<article class="catalog-card"><div class="catalog-card-image"${project.image_url||project.image?` style="background-image:url('${escapeHtml(cloudinaryImage(project.image_url||project.image))}')"`:''}><span>${escapeHtml(project.stage||'preventa')}</span></div><div class="catalog-card-body"><h3>${escapeHtml(project.name)}</h3><p>${escapeHtml(project.scope||project.description||'Sin descripción')}</p><small>${escapeHtml(project.client||project.location||'Proyecto HPD')} · ${Number(project.progress||0)}% avance</small><div class="catalog-card-actions"><button type="button" data-project-action="edit" data-project-id="${escapeHtml(project.id)}">Editar</button><button type="button" data-project-action="delete" data-project-id="${escapeHtml(project.id)}">Eliminar</button></div></div></article>`).join('')}</div>`:'<div class="catalog-empty">Aún no hay proyectos registrados. Usa “Nuevo proyecto” para crear el primero.</div>';
+  catalog.querySelectorAll('[data-project-action]').forEach(button=>button.addEventListener('click',()=>{
+   const project=projects.find(entry=>String(entry.id)===button.dataset.projectId);
+   if(!project)return;
+   if(button.dataset.projectAction==='delete') deleteProject(project);
+   else editProject(project);
+  }));
+ };
+ const editProject=async project=>{
+  const name=prompt('Nombre del proyecto',project.name); if(name===null)return;
+  const scope=prompt('Descripción y alcance',project.scope||''); if(scope===null)return;
+  const progress=Number(prompt('Avance (%)',project.progress||0)); if(!Number.isInteger(progress)||progress<0||progress>100)return alert('El avance debe estar entre 0 y 100.');
+  const next={...project,name,scope,progress};
+  if(Number.isInteger(Number(project.id))){const response=await fetch(`/api/projects/${project.id}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(next)});if(response.ok){const payload=await response.json();Object.assign(next,payload.project);}}
+  projects=projects.map(entry=>String(entry.id)===String(project.id)?next:entry);localStorage.setItem(projectKey,JSON.stringify(projects));updateProjectCount();
+ };
+ const deleteProject=async project=>{
+  if(!confirm(`¿Eliminar “${project.name}”?`))return;
+  if(Number.isInteger(Number(project.id))){const response=await fetch(`/api/projects/${project.id}`,{method:'DELETE'});if(!response.ok)return alert('No se pudo eliminar el proyecto.');}
+  projects=projects.filter(entry=>String(entry.id)!==String(project.id));localStorage.setItem(projectKey,JSON.stringify(projects));updateProjectCount();
  };
  const updateProjectCount=()=>{
   const active=projects.filter(project=>project.stage!=="cerrado").length;

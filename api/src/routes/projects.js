@@ -1,6 +1,6 @@
 import { Router } from "express";
 import multer from "multer";
-import { createProject, listProjects, uploadProjectImage } from "../db.js";
+import { createProject, deleteProject, listProjects, updateProject, uploadProjectImage } from "../db.js";
 import { projectFormSchema, projectSchema } from "../validation.js";
 
 export function createProjectRouter() {
@@ -27,6 +27,24 @@ export function createProjectRouter() {
     } catch (error) {
       next(error);
     }
+  });
+  router.put("/:id", async (request, response, next) => {
+    try {
+      const id = Number(request.params.id);
+      const parsed = projectSchema.safeParse(request.body);
+      if (!Number.isInteger(id) || id < 1 || !parsed.success) return response.status(422).json({ error: "invalid_project_payload" });
+      const project = await updateProject(id, parsed.data);
+      if (!project) return response.status(404).json({ error: "project_not_found" });
+      response.json({ project, requestId: request.requestId });
+    } catch (error) { next(error); }
+  });
+  router.delete("/:id", async (request, response, next) => {
+    try {
+      const id = Number(request.params.id);
+      if (!Number.isInteger(id) || id < 1) return response.status(422).json({ error: "invalid_project_id" });
+      if (!await deleteProject(id)) return response.status(404).json({ error: "project_not_found" });
+      response.status(204).end();
+    } catch (error) { next(error); }
   });
   return router;
 }

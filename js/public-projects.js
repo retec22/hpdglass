@@ -8,6 +8,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     const payload = await response.json();
     const projects = Array.isArray(payload.projects) ? payload.projects : [];
     projects.forEach((project) => {
+      const existing = [...grid.querySelectorAll("[data-project-category]")].find((card) => card.querySelector("h3")?.textContent.trim().toLowerCase() === String(project.name || "").trim().toLowerCase());
+      if (existing) {
+        const image = existing.querySelector("img");
+        if (image && project.image_url) image.src = project.image_url;
+        const description = existing.querySelector(".body p");
+        if (description && project.scope) description.textContent = project.scope;
+        return;
+      }
       const card = document.createElement("a");
       card.className = "card product-card reveal dynamic-project-card";
       card.dataset.projectCategory = "all";
